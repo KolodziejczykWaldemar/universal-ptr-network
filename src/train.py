@@ -2,7 +2,7 @@ import torch
 from torch import optim, nn
 from torch.nn import functional as F
 
-from src.architecture.feature_extractors.image_feature_extractor import Head
+from src.feature_extractors.image_feature_extractor import MLPFeatureExtractor
 from src.architecture.ptr_network import PointerNetwork
 
 EPSILON = 1e-7  # for numerical stability of log in case of probabilities reaching 0
@@ -80,13 +80,12 @@ def evaluate(model, epoch):
         ))
 
 
-mlp_feature_extractor = Head(input_size=1,
-                             hidden_size=20,
-                             hidden_layers=2,
-                             output_size=64)
+mlp_feature_extractor = MLPFeatureExtractor(input_size=1,
+                                            hidden_size=20,
+                                            hidden_layers=2,
+                                            output_size=64)
 
 ptr_network = PointerNetwork(feature_extractor=mlp_feature_extractor,
-                             embedding_dim=64,
                              hidden_size=50,
                              max_seq_len=15,
                              only_uniques=True)

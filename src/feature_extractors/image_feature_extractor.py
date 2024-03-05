@@ -5,7 +5,8 @@ import torch
 import torch.nn.functional as F
 from torch import nn
 
-from src.architecture.feature_extractors.feature_extractor import FeatureExtractor
+from src.feature_extractors.feature_extractor import FeatureExtractor
+from src.feature_extractors.mlp import MLPFeatureExtractor
 
 
 class ImageFeatureExtractor(FeatureExtractor):
@@ -30,10 +31,10 @@ class ImageFeatureExtractor(FeatureExtractor):
 
         self._feature_extractor = ConvExtractor(input_shape_chw=input_shape_chw)
         flat_size = self._infer_flat_size()
-        self._head = Head(input_size=flat_size,
-                          hidden_size=self._hidden_size,
-                          hidden_layers=self._hidden_layers,
-                          output_size=self._embedding_dim)
+        self._head = MLPFeatureExtractor(input_size=flat_size,
+                                         hidden_size=self._hidden_size,
+                                         hidden_layers=self._hidden_layers,
+                                         output_size=self._embedding_dim)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         # x.shape = (batch_size, ,time_steps, channels, height, width)
@@ -85,35 +86,3 @@ class ConvExtractor(nn.Module):
         x = x.reshape(x.shape[0], -1)
         return x
 
-
-class Head(FeatureExtractor):
-    def __init__(self,
-                 input_size: int,
-                 hidden_size: int,
-                 hidden_layers: int,
-                 output_size: int) -> None:
-        """Embedding head for the feature extractor.
-
-        input_size (int): The size of the input tensor.
-        hidden_size (int): The size of the hidden layers.
-        hidden_layers (int): The number of hidden layers excluding the last layer.
-        output_size (int): The size of the output tensor.
-        """
-        super().__init__()
-        self._output_size = output_size
-        self.linear_first = nn.Linear(input_size, hidden_size)
-        self.middle_layers = nn.ModuleList(
-            [nn.Linear(hidden_size, hidden_size) for _ in range(max(0, hidden_layers - 1))]
-        )
-        self.linear_last = nn.Linear(hidden_size, output_size)
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        x = F.relu(self.linear_first(x))
-        for layer in self.middle_layers:
-            x = F.relu(layer(x))
-        x = self.linear_last(x)
-        return x
-
-    @property
-    def embedding_dim(self) -> int:
-        return self._output_size
