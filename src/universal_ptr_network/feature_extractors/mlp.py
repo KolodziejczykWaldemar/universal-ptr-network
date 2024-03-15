@@ -2,7 +2,7 @@ import torch
 import torch.nn.functional as F
 from torch import nn
 
-from src.feature_extractors.feature_extractor import FeatureExtractor
+from universal_ptr_network.feature_extractors.feature_extractor import FeatureExtractor
 
 
 class MLPFeatureExtractor(FeatureExtractor):

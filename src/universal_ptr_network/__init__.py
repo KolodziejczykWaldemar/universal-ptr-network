@@ -1,3 +1,4 @@
 from .architecture.ptr_network import PointerNetwork
+from .feature_extractors.feature_extractor import FeatureExtractor
 from .feature_extractors.image_feature_extractor import ImageFeatureExtractor
 from .feature_extractors.mlp import MLPFeatureExtractor

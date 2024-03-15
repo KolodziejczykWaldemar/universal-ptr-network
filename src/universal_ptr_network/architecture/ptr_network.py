@@ -2,9 +2,9 @@ from typing import Optional, Tuple, Union
 
 import torch
 
-from src.architecture.decoder import SequenceDecoder
-from src.architecture.encoder import SequenceEncoder
-from src.feature_extractors.feature_extractor import FeatureExtractor
+from universal_ptr_network.architecture.decoder import SequenceDecoder
+from universal_ptr_network.architecture.encoder import SequenceEncoder
+from universal_ptr_network.feature_extractors.feature_extractor import FeatureExtractor
 
 
 class PointerNetwork(torch.nn.Module):

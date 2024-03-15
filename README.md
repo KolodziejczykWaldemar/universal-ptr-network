@@ -20,7 +20,7 @@ This is a PyTorch implementation of the Pointer Network model described in the p
 - selecting top `T` elements from a sequence
 ```python
 import torch
-from pointer_network import MLPFeatureExtractor, PointerNetwork
+from universal_ptr_network import MLPFeatureExtractor, PointerNetwork
 
 # Padding element of the sequence for the case of variable length sequences in the batch
 pad_element = -1
@@ -69,7 +69,7 @@ print(peak_indices.shape)  # shape: (2, 10)
 - selecting top `T` elements from a sequence, allowing duplicates
 ```python
 import torch
-from pointer_network import MLPFeatureExtractor, PointerNetwork
+from universal_ptr_network import MLPFeatureExtractor, PointerNetwork
 
 # Padding element of the sequence for the case of variable length sequences in the batch
 pad_element = -1

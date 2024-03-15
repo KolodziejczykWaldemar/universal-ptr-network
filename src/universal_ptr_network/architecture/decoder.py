@@ -3,7 +3,7 @@ from typing import Optional, Tuple, List
 import torch
 from torch import nn
 
-from src.architecture.attention import Attention
+from universal_ptr_network.architecture.attention import Attention
 
 
 class SequenceDecoder(torch.nn.Module):

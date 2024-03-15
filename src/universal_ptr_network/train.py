@@ -2,8 +2,8 @@ import torch
 from torch import optim, nn
 from torch.nn import functional as F
 
-from src.feature_extractors.image_feature_extractor import MLPFeatureExtractor
-from src.architecture.ptr_network import PointerNetwork
+from universal_ptr_network.architecture.ptr_network import PointerNetwork
+from universal_ptr_network.feature_extractors.mlp import MLPFeatureExtractor
 
 EPSILON = 1e-7  # for numerical stability of log in case of probabilities reaching 0
 

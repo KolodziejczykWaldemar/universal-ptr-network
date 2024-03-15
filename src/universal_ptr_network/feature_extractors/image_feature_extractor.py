@@ -5,8 +5,8 @@ import torch
 import torch.nn.functional as F
 from torch import nn
 
-from src.feature_extractors.feature_extractor import FeatureExtractor
-from src.feature_extractors.mlp import MLPFeatureExtractor
+from universal_ptr_network.feature_extractors.feature_extractor import FeatureExtractor
+from universal_ptr_network.feature_extractors.mlp import MLPFeatureExtractor
 
 
 class ImageFeatureExtractor(FeatureExtractor):
