@@ -1,4 +1,4 @@
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Union
 
 import torch
 
@@ -27,7 +27,9 @@ class PointerNetwork(torch.nn.Module):
 
     def forward(self,
                 inputs: torch.Tensor,
-                attention_mask: Optional[torch.Tensor] = None) -> Tuple[torch.Tensor, torch.Tensor]:
+                attention_mask: Optional[torch.Tensor] = None,
+                return_encoded_sequence: bool = False) -> Union[Tuple[torch.Tensor, torch.Tensor],
+                                                                Tuple[torch.Tensor, torch.Tensor, torch.Tensor]]:
         # TODO implement masking aware loss function
 
         if self._max_seq_len is not None:
@@ -47,5 +49,11 @@ class PointerNetwork(torch.nn.Module):
         encoded_elements, encoded_sequence = self._sequence_encoder(element_embeddings)
 
         probabilities, peak_indices = self._sequence_decoder(encoded_elements, encoded_sequence, attention_mask)
+
+        if return_encoded_sequence:
+            _, bidir_lstm_cell_state = encoded_sequence
+            # merge bidir_lstm_cell_state with shape (2, batch_size, hidden_size) into (batch_size, 2 * hidden_size)
+            reshaped_encoded_sequence = torch.cat([bidir_lstm_cell_state[0], bidir_lstm_cell_state[1]], dim=1)
+            return probabilities, peak_indices, reshaped_encoded_sequence
 
         return probabilities, peak_indices
