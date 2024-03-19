@@ -9,12 +9,16 @@ from universal_ptr_network.feature_extractors.feature_extractor import FeatureEx
 
 class PointerNetwork(torch.nn.Module):
     def __init__(self,
-                 feature_extractor: FeatureExtractor,
                  hidden_size: int,
+                 feature_extractor: FeatureExtractor,
+                 context_embedder: Optional[FeatureExtractor] = None,
                  max_seq_len: Optional[int] = None,
                  only_uniques: bool = False) -> None:
         super().__init__()
+
         self._feature_extractor = feature_extractor
+        self._context_embedder = context_embedder
+
         self._hidden_size = hidden_size
         self._max_seq_len = max_seq_len
         self._only_uniques = only_uniques
@@ -28,6 +32,7 @@ class PointerNetwork(torch.nn.Module):
     def forward(self,
                 inputs: torch.Tensor,
                 attention_mask: Optional[torch.Tensor] = None,
+                context: Optional[torch.Tensor] = None,
                 return_encoded_sequence: bool = False) -> Union[Tuple[torch.Tensor, torch.Tensor],
                                                                 Tuple[torch.Tensor, torch.Tensor, torch.Tensor]]:
         # TODO implement masking aware loss function
@@ -46,6 +51,14 @@ class PointerNetwork(torch.nn.Module):
             attention_mask = torch.ones_like(inputs[:, :, 0]).to(inputs.device)
 
         element_embeddings = self._feature_extractor(inputs)
+
+        if context is not None:
+            if self._context_embedder is None:
+                raise NotImplementedError('Context embedding is not supported for this model')
+            context = self._context_embedder(context)  # shape (batch_size, hidden_size)
+            context = context.unsqueeze(1).repeat(1, inputs.size(1), 1)  # shape (batch_size, timesteps, hidden_size)
+            element_embeddings += context
+
         encoded_elements, encoded_sequence = self._sequence_encoder(element_embeddings)
 
         probabilities, peak_indices = self._sequence_decoder(encoded_elements, encoded_sequence, attention_mask)
